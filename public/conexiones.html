@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conexiones — Tienda de Patrones</title>
+<meta name="description" content="Segunda ronda del taller de patrones de diseño: cada equipo recibe un patrón nuevo y lo conecta con código al que ya presentó.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #eae7de;
+    --sheet: #fbfaf5;
+    --ink: #21241f;
+    --ink-soft: #5c6158;
+    --line: #dbd7c9;
+    --accent: #c85a1d;
+    --accent-soft: #f1dcc9;
+    --cat-creacional: #6b6f63;
+    --cat-creacional-soft: #e4e4dc;
+    --cat-estructural: #a5761f;
+    --cat-estructural-soft: #f1e2c2;
+    --cat-comportamiento: #a8362a;
+    --cat-comportamiento-soft: #f2d9d4;
+    --shadow: 0 1px 2px rgba(33,36,31,0.06), 0 12px 32px -16px rgba(33,36,31,0.28);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17181a;
+      --sheet: #232420;
+      --ink: #ede9df;
+      --ink-soft: #a8a99a;
+      --line: #3a3b34;
+      --accent: #e58444;
+      --accent-soft: #3a2a1c;
+      --cat-creacional: #a3a696;
+      --cat-creacional-soft: #34352d;
+      --cat-estructural: #d9a648;
+      --cat-estructural-soft: #3a2f18;
+      --cat-comportamiento: #dd7a6c;
+      --cat-comportamiento-soft: #3a211d;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -16px rgba(0,0,0,0.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #17181a;
+    --sheet: #232420;
+    --ink: #ede9df;
+    --ink-soft: #a8a99a;
+    --line: #3a3b34;
+    --accent: #e58444;
+    --accent-soft: #3a2a1c;
+    --cat-creacional: #a3a696;
+    --cat-creacional-soft: #34352d;
+    --cat-estructural: #d9a648;
+    --cat-estructural-soft: #3a2f18;
+    --cat-comportamiento: #dd7a6c;
+    --cat-comportamiento-soft: #3a211d;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -16px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: clamp(20px, 5vw, 56px) clamp(16px, 4vw, 28px) 64px;
+  }
+
+  .sheet {
+    background: var(--sheet);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: clamp(24px, 5vw, 56px);
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.02;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 66ch;
+    margin: 0 0 24px;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .tag-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    padding: 9px 14px;
+    border-radius: 2px;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .tag-link:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .tag-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tag-link .k { color: var(--ink-soft); }
+
+  hr.div {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 36px 0;
+  }
+
+  h2 {
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+
+  h3 {
+    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0 0 2px;
+  }
+
+  .section-note {
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    max-width: 68ch;
+    margin: 0 0 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  .table-wrap { overflow-x: auto; }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-top: 1px solid var(--line);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-top: none;
+    border-bottom: 1px solid var(--line);
+  }
+  td code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.86em;
+    background: var(--accent-soft);
+    color: var(--ink);
+    padding: 0.1em 0.4em;
+    border-radius: 2px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .pill.creacional { color: var(--cat-creacional); background: var(--cat-creacional-soft); }
+  .pill.creacional .pill-dot { background: var(--cat-creacional); }
+  .pill.estructural { color: var(--cat-estructural); background: var(--cat-estructural-soft); }
+  .pill.estructural .pill-dot { background: var(--cat-estructural); }
+  .pill.comportamiento { color: var(--cat-comportamiento); background: var(--cat-comportamiento-soft); }
+  .pill.comportamiento .pill-dot { background: var(--cat-comportamiento); }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .step-num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--accent);
+    line-height: 1.4;
+  }
+  .step-body p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .pair-card {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    background: var(--paper);
+  }
+  .pair-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .pair-why {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin: 0 0 10px;
+  }
+
+  pre.code-block {
+    background: var(--ink);
+    color: var(--sheet);
+    border-radius: 3px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 4px 0 0;
+  }
+  pre.code-block .comment { opacity: 0.6; }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="sheet">
+    <p class="eyebrow">Ronda 2 · con lo que ya presentaron</p>
+    <h1>Conexiones entre patrones</h1>
+    <p class="lede">
+      Ya presentaron un patrón. Ahora les toca uno <strong>distinto</strong> — y en vez de estudiarlo
+      aislado, lo van a conectar con código real al que ya conocen. Mismo repositorio, mismos 9
+      patrones: no hay nada nuevo que instalar.
+    </p>
+    <div class="links">
+      <a class="tag-link" href="/" target="_blank" rel="noopener">
+        <span class="k">DEMO</span> patrones-tienda-escolar.vercel.app
+      </a>
+      <a class="tag-link" href="/actividades.html" target="_blank" rel="noopener">
+        <span class="k">RONDA 1</span> actividades.html
+      </a>
+    </div>
+
+    <hr class="div">
+
+    <h2>Reasignación</h2>
+    <p class="section-note">
+      Cada patrón que ya presentaron apunta a uno nuevo, elegido porque comparten código o una
+      pregunta de arquitectura real — no es al azar. Si su equipo ya tenía 2 patrones, elijan con
+      cuál de los dos siguen la cadena; reciben solo 1 patrón nuevo.
+    </p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Ya presentaron</th><th>Reciben ahora</th><th>Por qué conectan</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill creacional"><span class="pill-dot"></span>Singleton</span></td><td><span class="pill comportamiento"><span class="pill-dot"></span>Observer</span></td><td>Van a hacer que su propio Singleton "avise" cambios — Observer es el mecanismo que el carrito ya usa por dentro.</td></tr>
+        <tr><td><span class="pill comportamiento"><span class="pill-dot"></span>Observer</span></td><td><span class="pill comportamiento"><span class="pill-dot"></span>State</span></td><td>Observer avisa hacia afuera cuando se confirma un pedido; State controla qué pasa hacia adentro cuando cambia de estado. Son pasos consecutivos en el checkout.</td></tr>
+        <tr><td><span class="pill comportamiento"><span class="pill-dot"></span>State</span></td><td><span class="pill comportamiento"><span class="pill-dot"></span>Strategy</span></td><td>Los "primos" del catálogo: casi el mismo diagrama UML, intención distinta.</td></tr>
+        <tr><td><span class="pill comportamiento"><span class="pill-dot"></span>Strategy</span></td><td><span class="pill estructural"><span class="pill-dot"></span>Decorator</span></td><td>Los dos alteran el valor final del pedido por piezas conectables: uno cambia el cálculo, el otro apila costos.</td></tr>
+        <tr><td><span class="pill estructural"><span class="pill-dot"></span>Decorator</span></td><td><span class="pill creacional"><span class="pill-dot"></span>Builder</span></td><td>Ambos arman el mismo <code>Order</code>: Builder lo ensambla, Decorator lo envuelve después.</td></tr>
+        <tr><td><span class="pill creacional"><span class="pill-dot"></span>Builder</span></td><td><span class="pill estructural"><span class="pill-dot"></span>Facade</span></td><td>Secuencia real del código: el pedido construido entra directo a <code>CheckoutFacade.confirmar()</code>.</td></tr>
+        <tr><td><span class="pill estructural"><span class="pill-dot"></span>Facade</span></td><td><span class="pill estructural"><span class="pill-dot"></span>Adapter</span></td><td>Una fachada que por dentro depende de un adapter es una combinación clásica.</td></tr>
+        <tr><td><span class="pill estructural"><span class="pill-dot"></span>Adapter</span></td><td><span class="pill creacional"><span class="pill-dot"></span>Factory Method</span></td><td>Los dos "resuelven" métodos de pago por razones distintas: uno crea clases propias, el otro traduce una ajena.</td></tr>
+        <tr><td><span class="pill creacional"><span class="pill-dot"></span>Factory Method</span></td><td><span class="pill creacional"><span class="pill-dot"></span>Singleton</span></td><td>Cierra el ciclo: ¿por qué el carrito es Singleton y los métodos de pago no?</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <hr class="div">
+
+    <h2>La actividad</h2>
+    <p class="section-note">Pasos 1 a 4: los mismos de la ronda 1 (ver <code>actividades.html</code>), aplicados a su patrón nuevo. El paso 5 es el de esta ronda.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1-4</div>
+        <div class="step-body">
+          <p>Ubicar y explicar los roles del patrón nuevo, diagramarlo, extenderlo con la tarea ya documentada en <code>actividades.html</code>, y preparar cómo lo van a mostrar.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Conexión con código (nuevo)</h3>
+          <p>Busquen su pareja en la tabla de arriba y hagan la tarea de conexión correspondiente, más abajo. Cada una es un archivo nuevo (a veces con una línea extra en un archivo existente) que enlaza su patrón anterior con el nuevo.</p>
+        </div>
+      </div>
+    </div>
+    <p class="section-note" style="margin-top:14px">
+      <strong>Tiempo sugerido:</strong> 15 min ubicar + diagramar + extender el patrón nuevo · 10 min tarea de conexión · 5 min exponer ambas cosas.
+    </p>
+
+    <hr class="div">
+
+    <h2>Tarea de conexión por pareja</h2>
+    <p class="section-note">Los códigos de abajo son un punto de partida, no la solución — completen donde dice <code>completar</code>.</p>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill creacional"><span class="pill-dot"></span>Singleton</span><span>→</span><span class="pill comportamiento"><span class="pill-dot"></span>Observer</span></div>
+      <p class="pair-why">Suscriban un pequeño logger al carrito usando el mismo <code>subscribe()</code> que ya tiene.</p>
+      <pre class="code-block">// src/patterns/observer/CartActivityLogger.ts (archivo nuevo)
+import { CartStore } from "@/patterns/singleton/CartStore";
+
+export class CartActivityLogger {
+  constructor(private cart: CartStore) {
+    this.cart.subscribe(() => {
+      <span class="comment">// completar: mostrar en consola cuántos artículos hay ahora</span>
+    });
+  }
+}
+
+<span class="comment">// Úsenlo una vez: new CartActivityLogger(CartStore.getInstance());</span></pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill comportamiento"><span class="pill-dot"></span>Observer</span><span>→</span><span class="pill comportamiento"><span class="pill-dot"></span>State</span></div>
+      <p class="pair-why">Un observador que, al confirmarse el pedido, avanza un <code>PedidoContext</code> y muestra el nuevo estado.</p>
+      <pre class="code-block">// src/patterns/observer/OrderStateLogObserver.ts (archivo nuevo)
+import { Order } from "@/lib/types";
+import { OrderObserver } from "./OrderObserver";
+import { PedidoContext } from "@/patterns/state/PedidoContext";
+
+export class OrderStateLogObserver implements OrderObserver {
+  readonly name = "Registro de estado";
+  onOrderConfirmed(order: Order): void {
+    const contexto = new PedidoContext();
+    <span class="comment">// completar: contexto.avanzar() y mostrar contexto.getStateName() en consola</span>
+  }
+}
+
+<span class="comment">// Suscríbanlo en orderSubject.ts: orderSubject.subscribe(new OrderStateLogObserver());</span></pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill comportamiento"><span class="pill-dot"></span>State</span><span>→</span><span class="pill comportamiento"><span class="pill-dot"></span>Strategy</span></div>
+      <p class="pair-why">Una función que solo deja aplicar el descuento si el pedido sigue "Pendiente".</p>
+      <pre class="code-block">// src/patterns/strategy/descuentoSegunEstado.ts (archivo nuevo)
+import { DiscountStrategy } from "./DiscountStrategy";
+import { PedidoContext } from "@/patterns/state/PedidoContext";
+import { CartItem } from "@/lib/types";
+
+export function calcularDescuentoSegunEstado(
+  strategy: DiscountStrategy,
+  contexto: PedidoContext,
+  subtotal: number,
+  items: CartItem[]
+): number {
+  <span class="comment">// completar: si contexto.getStateName() !== "Pendiente", devolver 0;
+  // si no, devolver strategy.calculate(subtotal, items)</span>
+}</pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill comportamiento"><span class="pill-dot"></span>Strategy</span><span>→</span><span class="pill estructural"><span class="pill-dot"></span>Decorator</span></div>
+      <p class="pair-why">Un decorador cuyo costo depende de qué código de descuento esté activo.</p>
+      <pre class="code-block">// src/patterns/decorator/MemberDiscountDecorator.ts (archivo nuevo)
+import { OrderComponent } from "./OrderComponent";
+import { OrderDecorator } from "./OrderDecorator";
+
+export class MemberDiscountDecorator extends OrderDecorator {
+  constructor(wrapped: OrderComponent, private discountCode: string) {
+    super(wrapped);
+  }
+  getCost(): number {
+    <span class="comment">// completar: si this.discountCode === "DESC20", restar 2000 a super.getCost()</span>
+    return super.getCost();
+  }
+}</pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill estructural"><span class="pill-dot"></span>Decorator</span><span>→</span><span class="pill creacional"><span class="pill-dot"></span>Builder</span></div>
+      <p class="pair-why">Un builder que, sin tocar el original, sabe entregar el pedido ya envuelto en un decorador.</p>
+      <pre class="code-block">// src/patterns/builder/OrderBuilderConDecorators.ts (archivo nuevo)
+import { OrderBuilder } from "./OrderBuilder";
+import { BaseOrder } from "@/patterns/decorator/BaseOrder";
+import { ExpressShippingDecorator } from "@/patterns/decorator/ExpressShippingDecorator";
+
+export class OrderBuilderConDecorators extends OrderBuilder {
+  buildConEnvioExpres() {
+    const pedido = this.build();
+    <span class="comment">// completar: envolver pedido.items en BaseOrder y luego en ExpressShippingDecorator,
+    // devolver { pedido, costoConDecorador: decorador.getCost() }</span>
+  }
+}</pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill creacional"><span class="pill-dot"></span>Builder</span><span>→</span><span class="pill estructural"><span class="pill-dot"></span>Facade</span></div>
+      <p class="pair-why">Una función que encadena Builder → Facade tal como pasa en el checkout real.</p>
+      <pre class="code-block">// src/patterns/facade/construirYConfirmar.ts (archivo nuevo)
+import { OrderBuilder } from "@/patterns/builder/OrderBuilder";
+import { CheckoutFacade } from "./CheckoutFacade";
+import { PaymentMethod } from "@/patterns/factory/PaymentMethod";
+import { CartItem, Customer } from "@/lib/types";
+
+export function construirYConfirmar(
+  items: CartItem[],
+  customer: Customer,
+  metodoPago: PaymentMethod,
+  total: number
+) {
+  const pedido = new OrderBuilder().setItems(items).setCustomer(customer).build();
+  <span class="comment">// completar: crear una CheckoutFacade, llamar a confirmar(pedido, metodoPago, total)
+  // y devolver el resultado</span>
+}</pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill estructural"><span class="pill-dot"></span>Facade</span><span>→</span><span class="pill estructural"><span class="pill-dot"></span>Adapter</span></div>
+      <p class="pair-why">La misma idea del checkout, pero pagando a través del adapter en vez de la fábrica.</p>
+      <pre class="code-block">// src/patterns/adapter/pagarConPasarelaExterna.ts (archivo nuevo)
+import { Order } from "@/lib/types";
+import { PaymentGateway } from "./PaymentGateway";
+
+export function pagarConPasarelaExterna(order: Order, gateway: PaymentGateway, amountInCents: number) {
+  <span class="comment">// completar: llamar a gateway.charge(amountInCents) y devolver algo parecido
+  // a lo que devuelve CheckoutFacade.confirmar (success, orderId, referencia)
+  // Pista: comparen esta firma con la de PaymentMethod.pay — ¿por qué son distintas?</span>
+}</pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill estructural"><span class="pill-dot"></span>Adapter</span><span>→</span><span class="pill creacional"><span class="pill-dot"></span>Factory Method</span></div>
+      <p class="pair-why">La pasarela externa, ofrecida como un método de pago más de la fábrica.</p>
+      <pre class="code-block">// src/patterns/factory/payment-methods/ExternalGatewayPaymentMethod.ts (archivo nuevo)
+import { PaymentMethod } from "../PaymentMethod";
+import { ExternalGatewayXAdapter } from "@/patterns/adapter/ExternalGatewayXAdapter";
+
+export class ExternalGatewayPaymentMethod implements PaymentMethod {
+  readonly id = "pasarela-externa";
+  readonly label = "Pasarela externa";
+  private adapter = new ExternalGatewayXAdapter();
+
+  pay(amount: number) {
+    <span class="comment">// completar: llamar a this.adapter.charge(...) y adaptar su resultado
+    // a { success, reference }</span>
+  }
+}
+
+<span class="comment">// Y una línea nueva en PaymentMethodFactory.ts:
+// case "pasarela-externa": return new ExternalGatewayPaymentMethod();</span></pre>
+    </div>
+
+    <div class="pair-card">
+      <div class="pair-title"><span class="pill creacional"><span class="pill-dot"></span>Factory Method</span><span>→</span><span class="pill creacional"><span class="pill-dot"></span>Singleton</span></div>
+      <p class="pair-why">Rómpanlo a propósito: un carrito que no es Singleton, para ver qué se pierde.</p>
+      <pre class="code-block">// src/patterns/singleton/CartStoreNoSingleton.ts (archivo nuevo, solo para el experimento)
+export class CartStoreNoSingleton {
+  private items: string[] = [];
+  addItem(nombre: string) { this.items.push(nombre); }
+  getItems() { return this.items; }
+}
+
+<span class="comment">// En la consola del navegador o un archivo de prueba:
+// const carritoA = new CartStoreNoSingleton();
+// const carritoB = new CartStoreNoSingleton();
+// carritoA.addItem("Cuaderno");
+// completar: comparen carritoA.getItems() y carritoB.getItems() — ¿qué observan?</span></pre>
+    </div>
+
+    <footer>
+      <span>Tienda de Patrones — ronda 2: conexiones entre patrones</span>
+      <span>Next.js · TypeScript · sin backend</span>
+    </footer>
+  </div>
+</div>
+</body>
+</html>

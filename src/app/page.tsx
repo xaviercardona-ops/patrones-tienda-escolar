@@ -30,14 +30,24 @@ export default function Home() {
       <header className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <h1 className="text-xl font-semibold">🏫 Tienda de Patrones</h1>
-          <a
-            href="/actividades.html"
-            target="_blank"
-            rel="noopener"
-            className="text-sm underline hover:text-neutral-900"
-          >
-            Actividades
-          </a>
+          <div className="flex items-center gap-4 text-sm">
+            <a
+              href="/actividades.html"
+              target="_blank"
+              rel="noopener"
+              className="underline hover:text-neutral-900"
+            >
+              Actividades
+            </a>
+            <a
+              href="/conexiones.html"
+              target="_blank"
+              rel="noopener"
+              className="underline hover:text-neutral-900"
+            >
+              Conexiones (ronda 2)
+            </a>
+          </div>
         </div>
       </header>
 
